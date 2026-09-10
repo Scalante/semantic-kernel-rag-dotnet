@@ -106,7 +106,89 @@ repetitivo y estructurado con datos etiquetados.
 
 ---
 
-## 4. Beneficios
+## 4. La extensión pgvector en detalle
+
+`pgvector` (en el contenedor de este proyecto, versión **0.8.6**) convierte a
+PostgreSQL en una base de datos vectorial **sin dejar de ser PostgreSQL**. Se
+habilita con `CREATE EXTENSION vector;` (lo hace `init-pgvector.sql` al crear el
+contenedor).
+
+### 4.1. Tipos de dato que agrega
+
+| Tipo | Qué es | Uso |
+|---|---|---|
+| `vector(n)` | vector denso de `n` floats de 4 bytes | el de este proyecto: **`vector(768)`** |
+| `halfvec(n)` | igual pero 2 bytes por dimensión | mitad de espacio, casi el mismo recall |
+| `bit(n)` | vector binario | embeddings binarios (Hamming/Jaccard) |
+| `sparsevec` | vector disperso (casi todo ceros) | búsquedas tipo keyword/BM25 |
+
+Límite: hasta 16.000 dimensiones (2.000 si se va a indexar con `vector`, 4.000
+con `halfvec`). Un `vector(768)` ocupa ~3 KB por fila.
+
+### 4.2. Operadores de distancia
+
+Se usan en el `ORDER BY` para traer "los más parecidos":
+
+| Operador | Métrica | |
+|---|---|---|
+| `<=>` | **distancia de coseno** (`1 - similitud`) | ← el que usa este proyecto |
+| `<->` | distancia euclidiana (L2) | |
+| `<#>` | producto interno negativo | |
+| `<+>` | distancia L1 / Manhattan | desde 0.7 |
+| `<~>` / `<%>` | Hamming / Jaccard (para `bit`) | |
+
+La columna `Embedding` del record declara `DistanceFunction.CosineSimilarity`, y
+la búsqueda que ejecuta el conector es, en esencia:
+
+```sql
+SELECT * FROM knowledge_documents
+ORDER BY "Embedding" <=> $1   -- $1 = embedding de la pregunta
+LIMIT 3;
+```
+
+El `score` que devuelve `/api/rag/search` es `1 - (Embedding <=> pregunta)` —
+la similitud de coseno, más alto = más parecido.
+
+### 4.3. Índices ANN (búsqueda aproximada, para escala)
+
+Sin índice vectorial la búsqueda es **exacta** pero escanea todas las filas. Con
+volumen se crea un índice de *approximate nearest neighbor*:
+
+| Índice | Cómo funciona | Cuándo |
+|---|---|---|
+| **HNSW** | grafo navegable en capas | mejor recall y velocidad de consulta; más RAM, más lento de construir. El recomendado hoy. |
+| **IVFFlat** | agrupa vectores en `lists` centroides y busca en unos `probes` | más liviano; necesita datos ya cargados al crearlo |
+
+```sql
+CREATE INDEX ON knowledge_documents
+USING hnsw ("Embedding" vector_cosine_ops);
+```
+
+**Estado actual en este proyecto:** la tabla `knowledge_documents` tiene
+`Embedding vector(768) NOT NULL` y solo índices *btree* en `Id`, `Title` y
+`Source` — **ningún índice vectorial**. Con los 4 documentos de ejemplo la
+búsqueda exacta es instantánea; el índice HNSW se añadiría al pasar a miles o
+millones de filas.
+
+### 4.4. Lo que hereda por ser "solo una extensión de Postgres"
+
+Esta es la ventaja de diseño frente a Pinecone / Qdrant / Milvus:
+
+- **Transacciones ACID** — guardar el documento y su embedding en la misma transacción.
+- **JOINs** con las tablas de negocio (`knowledge_documents` × `clientes` × `permisos`).
+- **`WHERE` + búsqueda vectorial juntos**: `WHERE "Source" = 'ventas' ORDER BY "Embedding" <=> $1`.
+- **Backups, réplicas, roles/permisos, particionado** — la operación de Postgres que ya se conoce.
+- **Un solo motor** que administrar, no un sistema vectorial aparte.
+
+### 4.5. Funciones útiles
+
+`l2_distance()`, `cosine_distance()`, `inner_product()`, `vector_dims()`,
+`vector_norm()`, y agregados `avg(vector)` / `sum(vector)` (para calcular
+centroides).
+
+---
+
+## 5. Beneficios
 
 ### Técnicos
 - **Menos alucinaciones** → confiable para uso real, no solo demos.
@@ -125,7 +207,7 @@ repetitivo y estructurado con datos etiquetados.
 
 ---
 
-## 5. Escenarios de aplicación por área
+## 6. Escenarios de aplicación por área
 
 ### Ventas / Comercial
 
@@ -182,7 +264,7 @@ industria, FAQ técnicas.
 
 ---
 
-## 6. Cómo elegir qué pieza usar
+## 7. Cómo elegir qué pieza usar
 
 | Si la tarea es… | Usa |
 |---|---|
@@ -194,7 +276,7 @@ industria, FAQ técnicas.
 
 ---
 
-## 7. Dónde NO aplica (para ser honesto en la entrevista)
+## 8. Dónde NO aplica (para ser honesto en la entrevista)
 
 - **Cálculos exactos y críticos** (contabilidad, nómina): el LLM redacta, pero el número lo pone un sistema determinista vía function calling, nunca el modelo.
 - **Decisiones legales/médicas vinculantes**: asiste, no decide.
@@ -203,7 +285,7 @@ industria, FAQ técnicas.
 
 ---
 
-## 8. El pitch para la entrevista
+## 9. El pitch para la entrevista
 
 > "Construí un backend en .NET 10 con Clean Architecture que integra los 5
 > pilares de IA aplicada que pide la vacante, y los tres —Microsoft.Extensions.AI,
@@ -219,7 +301,7 @@ industria, FAQ técnicas.
 
 ---
 
-## 9. Mapa: pieza ↔ archivo
+## 10. Mapa: pieza ↔ archivo
 
 | Pieza | Archivos clave |
 |---|---|
