@@ -140,7 +140,14 @@ dotnet run --project src/AiPortfolio.Api --launch-profile http
 ```
 
 El perfil `http` escucha en `http://localhost:5080` (el perfil `https` usa
-`https://localhost:7080`). Swagger queda en `http://localhost:5080/swagger`.
+`https://localhost:7080`).
+
+- **`http://localhost:5080/`** → **panel de pruebas** (SPA estática en
+  `src/AiPortfolio.Api/wwwroot/`): seed de documentos, chat con el agente,
+  búsqueda vectorial con barra de score y clasificador de tickets, todo desde el
+  navegador.
+- `http://localhost:5080/swagger` → Swagger.
+- `http://localhost:5080/api/*` → los endpoints REST.
 
 > Los puertos viven en `src/AiPortfolio.Api/Properties/launchSettings.json`. Se
 > eligieron altos y fijos porque los que asigna Visual Studio por defecto (rango

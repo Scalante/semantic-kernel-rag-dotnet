@@ -61,11 +61,31 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+// Panel de pruebas estático (wwwroot/index.html). Sirve la SPA en "/" y deja
+// la API en "/api/*" y Swagger en "/swagger".
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 // ---------------------------------------------------------------------------
 // Endpoints
 // ---------------------------------------------------------------------------
 
 var api = app.MapGroup("/api");
+
+// --- Estado: qué proveedor/modelo está activo (lo consume el panel de pruebas) ---
+api.MapGet("/health", (RagOptions rag) => Results.Ok(new
+    {
+        status = "ok",
+        llm = new { provider = aiProviderOptions.Provider.ToString(), model = aiProviderOptions.ModelId },
+        embeddings = new
+        {
+            provider = rag.EmbeddingProvider.ToString(),
+            model = rag.EmbeddingModelId,
+            minRelevanceScore = rag.MinRelevanceScore
+        }
+    }))
+    .WithName("Health")
+    .WithSummary("Estado de la API y configuración activa de LLM/embeddings.");
 
 // --- Semantic Kernel + Microsoft.Extensions.AI + RAG (agente conversacional) ---
 api.MapPost("/chat", async (ChatRequest request, IChatAgentService chatAgent, CancellationToken ct) =>
