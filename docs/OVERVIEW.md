@@ -313,3 +313,101 @@ industria, FAQ técnicas.
 | ML.NET (clasificación) | `src/AiPortfolio.Infrastructure.MLNet/` |
 | Endpoints REST | `src/AiPortfolio.Api/Program.cs` |
 | Interfaces / DTOs (contratos entre capas) | `src/AiPortfolio.Application/` |
+
+---
+
+## 11. Mejoras futuras
+
+El scaffold está deliberadamente acotado. Estas son las líneas de mejora, en
+orden aproximado de impacto sobre la calidad del RAG.
+
+### 11.1. Calidad de recuperación (embeddings + re-ranker)
+
+**Limitación actual.** Con `nomic-embed-text` los scores de similitud quedan muy
+comprimidos (un acierto ~0.72, el ruido ~0.52-0.66). Consecuencias observadas:
+
+- Un solo umbral global (`Rag:MinRelevanceScore`) discrimina mal: subirlo pierde
+  aciertos, bajarlo cuela ruido.
+- El **orden** entre dos documentos "más o menos relacionados" es frágil: el
+  documento correcto no siempre queda en el puesto 1.
+- Se agrava porque los documentos de ejemplo son homogéneos (todos "políticas de
+  Empresa Demo") y `nomic-embed-text` es *English-first* (español más débil).
+
+Esto no es un bug: es el comportamiento esperado de un modelo de embeddings
+pequeño con `cosine top-K` crudo. El panel lo hace visible al mostrar el `score`.
+
+**Cómo se ataca en un RAG de producción:**
+
+```
+consulta
+  → embedding → BD vectorial: cosine top-N   (N grande · RECALL, rápido, aproximado)
+  → re-ranker: cross-encode(consulta, doc)    (reordena los N · PRECISIÓN, lento)
+  → top-K final → LLM
+```
+
+- **Bi-encoder (embedding):** codifica consulta y documento por separado. Rápido,
+  escala a millones. Es lo que hay hoy.
+- **Cross-encoder (re-ranker):** mete `(consulta, documento)` juntos y saca una
+  relevancia. Mucho más preciso, pero solo se corre sobre la lista corta.
+
+**Paso 1 — mejor modelo de embeddings.** Cambio en el repo:
+`Rag:EmbeddingModelId` + dimensión del vector en `KnowledgeDocumentRecord`
+(768 → 1024) + `TRUNCATE knowledge_documents` + re-seed.
+
+| Opción | Dónde corre | Notas |
+|---|---|---|
+| `bge-m3` | Ollama (`ollama pull bge-m3`) | 1024 dim, 8k contexto, multilingüe fuerte. Buen primer cambio. |
+| `mxbai-embed-large` | Ollama | 1024 dim, buen equilibrio. |
+| `snowflake-arctic-embed-2.0` | Ollama / HF | 1024 dim, multilingüe eficiente. |
+| `Qwen3-Embedding-0.6B/4B` | HF / vLLM | SOTA abierto en MMTEB multilingüe (2025). |
+| `gemini-embedding-001` | API Google | 3072 dim (Matryoshka), 100+ idiomas. |
+| `voyage-3-large` / `embed-v4` (Cohere) | API | Suelen liderar benchmarks de retrieval empresarial. |
+
+**Paso 2 — re-ranker.** Nuevo `IReRankerService` que se llama entre
+`SearchRelevantAsync` y `KnowledgeBasePlugin`.
+
+| Opción | Dónde corre | Notas |
+|---|---|---|
+| Cohere `rerank-v3.5` | API (capa gratuita) | Estándar de facto, multilingüe, una llamada HTTP. Camino más rápido. |
+| `bge-reranker-v2-m3` | Self-host (HF **TEI** por Docker, endpoint `/rerank`) o ONNX in-process en .NET | ~568M, ligero, buen español. |
+| `Qwen3-Reranker-0.6B` | Self-host (TEI / vLLM) | SOTA abierto 2025, ya rinde bien en el tamaño chico. |
+| `mxbai-rerank-base-v2` | Self-host | Apache-2, moderno. |
+| ColBERT v2 / `jina-colbert-v2` | Self-host | *Late interaction*: punto medio entre bi- y cross-encoder. |
+
+> Ollama **no** expone un endpoint de rerank fiable; por eso el re-ranker
+> self-hosted iría como servicio aparte (TEI) o embebido vía ONNX Runtime.
+
+**Referencia para elegir:** leaderboard **MTEB / MMTEB** en HuggingFace, filtrando
+por *Retrieval* y por idioma español (`spa`).
+
+### 11.2. Ingesta y almacenamiento
+
+- **Chunking real** de documentos largos (por párrafo / N tokens con solape) en
+  vez de "1 archivo = 1 fila".
+- **Índice HNSW** en la columna `Embedding` cuando el volumen crezca
+  (`CREATE INDEX ... USING hnsw ("Embedding" vector_cosine_ops)`); hoy la búsqueda
+  es exacta y secuencial porque hay pocos documentos.
+- Metadatos por chunk (fecha, área, permisos) para filtrar la búsqueda con
+  `WHERE` además del vector.
+
+### 11.3. Agente y API
+
+- **Memoria de conversación**: hoy `ChatHistory` se arma por request y no se
+  persiste; `conversationId` se devuelve pero no se usa para recuperar el
+  historial.
+- **Respuestas en streaming** (Server-Sent Events) para el chat.
+- **Autenticación / autorización** en los endpoints.
+- **Observabilidad**: OpenTelemetry (trazas del pipeline RAG, latencia por etapa,
+  tokens) — es la Fase 5 del `ROADMAP.md`.
+
+### 11.4. ML.NET
+
+- Separar entrenamiento de predicción: un job que entrena y guarda `model.zip`
+  con `mlContext.Model.Save`, y el servicio solo lo carga.
+- Reentrenamiento programado con datos nuevos de tickets reales.
+
+### 11.5. Evaluación
+
+- Un set de preguntas con su respuesta/documento esperado y métricas
+  (recall@k, MRR, "faithfulness") para medir el impacto de cada cambio de arriba
+  en vez de evaluar a ojo.
