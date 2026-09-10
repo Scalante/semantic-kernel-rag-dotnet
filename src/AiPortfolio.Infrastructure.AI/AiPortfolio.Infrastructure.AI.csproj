@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>AiPortfolio.Infrastructure.AI</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Orquestación de agentes, plugins, function calling y prompt chaining.
+         Toda la línea de Semantic Kernel se fija a 1.74.x porque el conector de
+         Postgres (Microsoft.SemanticKernel.Connectors.PgVector) solo existe hasta
+         1.74.0-preview y no es binariamente compatible con SK 1.80. -->
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.74.0" />
+    <!-- Conector de OpenAI / Azure OpenAI (AddOpenAIChatCompletion, OpenAIPromptExecutionSettings). -->
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.74.0" />
+    <!-- Conector nativo de Ollama (AddOllamaChatCompletion). Publicado como -alpha por el equipo de SK. -->
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.74.0-alpha" />
+    <!-- Abstracción agnóstica de proveedor de LLM (IChatClient). -->
+    <PackageReference Include="Microsoft.Extensions.AI" Version="10.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AiPortfolio.Application\AiPortfolio.Application.csproj" />
+    <ProjectReference Include="..\AiPortfolio.Infrastructure.Rag\AiPortfolio.Infrastructure.Rag.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+# Levanta Postgres con la extensión pgvector ya instalada, para el módulo de RAG.
+# Uso: docker compose up -d
+#
+# El puerto del HOST es 55432 (no 5432) a propósito: en esta máquina hay dos
+# instalaciones nativas de PostgreSQL ocupando 5432 y 5433. 55432 está libre.
+# Dentro del contenedor Postgres sigue en 5432; el mapeo es 55432 (host) -> 5432 (contenedor).
+#
+# Cadena de conexión (coincide con appsettings.json):
+#   Host=localhost;Port=55432;Database=aiportfolio;Username=postgres;Password=postgres
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: aiportfolio-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: aiportfolio
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "55432:5432"
+    volumes:
+      - aiportfolio-postgres-data:/var/lib/postgresql/data
+      - ./init-pgvector.sql:/docker-entrypoint-initdb.d/init-pgvector.sql
+
+volumes:
+  aiportfolio-postgres-data:

@@ -1,0 +1,14 @@
+Guía de soporte de TI - Empresa Demo
+
+Para incidentes urgentes (no se puede trabajar: laptop dañada, sin acceso a
+VPN, sistema caído) contactar al canal #soporte-ti en Slack, que tiene
+atención de lunes a viernes de 7:00 a.m. a 7:00 p.m. hora Colombia. Se
+espera primera respuesta en menos de 30 minutos durante ese horario.
+
+Para solicitudes no urgentes (instalación de software, accesos nuevos,
+cambio de periférico) se debe abrir un ticket en el portal interno de TI;
+el tiempo de atención estándar es de 2 días hábiles.
+
+Las contraseñas corporativas deben rotarse cada 90 días y no pueden
+reutilizarse respecto a las últimas 5 contraseñas usadas. El acceso remoto
+a servidores de producción siempre requiere autenticación multifactor (MFA).

@@ -1,0 +1,15 @@
+Política de trabajo remoto - Empresa Demo
+
+La empresa opera bajo un modelo híbrido: 3 días presenciales en oficina y
+2 días remotos por semana, coordinados con el líder de equipo. Los equipos
+100% remotos (por ejemplo, desarrollo de software distribuido) pueden
+solicitar una excepción permanente ante Recursos Humanos.
+
+Para trabajar remoto se requiere: conexión a internet estable (mínimo 20
+Mbps), disponibilidad en el horario laboral acordado (9:00 a.m. a 6:00 p.m.
+hora Colombia) y conexión a la VPN corporativa para acceder a sistemas
+internos. El equipo de TI proporciona laptop y accesorios; el empleado es
+responsable de mantener un espacio de trabajo adecuado.
+
+Las reuniones de seguimiento semanal (dailies) son obligatorias sin importar
+si el día es remoto o presencial.

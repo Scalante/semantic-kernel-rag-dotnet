@@ -1,0 +1,41 @@
+Description,Category
+La aplicación se cierra sola cuando intento exportar un reporte en PDF,Bug
+El botón de guardar no responde después de editar un cliente,Bug
+Aparece un error 500 al subir una imagen mayor a 2MB,Bug
+Los totales de la factura no coinciden con la suma de los items,Bug
+La sesión se cierra sola cada 5 minutos aunque esté activo,Bug
+El campo de fecha permite ingresar fechas futuras inválidas,Bug
+Al filtrar por rango de fechas la tabla queda en blanco,Bug
+El sistema duplica el registro cuando se hace doble clic en guardar,Bug
+La búsqueda no encuentra resultados aunque el dato existe en la base,Bug
+El módulo de reportes muestra datos de otro usuario,Bug
+La app no carga en Firefox pero sí en Chrome,Bug
+El envío de correos de notificación falla intermitentemente,Bug
+Al actualizar el perfil se pierde la foto cargada anteriormente,Bug
+El dashboard tarda más de 30 segundos en cargar los indicadores,Bug
+La paginación repite la primera página en todas las páginas siguientes,Bug
+¿Cómo puedo restablecer mi contraseña si olvidé el correo asociado?,Pregunta
+¿Dónde puedo ver el historial de cambios de un documento?,Pregunta
+¿Cuál es el horario de atención del equipo de soporte?,Pregunta
+¿Es posible integrar el sistema con Google Calendar?,Pregunta
+¿Qué permisos necesita un usuario para aprobar solicitudes?,Pregunta
+¿Cómo exporto mis datos a un archivo Excel?,Pregunta
+¿El sistema funciona sin conexión a internet?,Pregunta
+¿Cuántos usuarios puedo crear con mi plan actual?,Pregunta
+¿Dónde configuro las notificaciones por correo?,Pregunta
+¿Cómo cambio el idioma de la interfaz?,Pregunta
+¿Qué navegadores son compatibles con la plataforma?,Pregunta
+¿Puedo tener múltiples empresas bajo la misma cuenta?,Pregunta
+¿Cómo doy de baja a un usuario que ya no trabaja en la empresa?,Pregunta
+¿Existe una API pública para consultar los datos?,Pregunta
+¿Cómo se calcula el indicador de cumplimiento en el dashboard?,Pregunta
+Sería útil poder exportar los reportes también en formato Excel,Mejora
+Nos gustaría tener un modo oscuro para la interfaz,Mejora
+Sería ideal poder adjuntar varios archivos a la vez en un ticket,Mejora
+Propongo agregar autenticación con Google para iniciar sesión más rápido,Mejora
+Sería bueno recibir un resumen semanal por correo con las métricas clave,Mejora
+Agregar un buscador global que busque en todos los módulos a la vez,Mejora
+Permitir personalizar las columnas visibles en las tablas de datos,Mejora
+Sería útil un historial de auditoría más detallado por usuario,Mejora
+Agregar soporte para atajos de teclado en las pantallas más usadas,Mejora
+Sería excelente tener una app móvil para aprobar solicitudes desde el celular,Mejora

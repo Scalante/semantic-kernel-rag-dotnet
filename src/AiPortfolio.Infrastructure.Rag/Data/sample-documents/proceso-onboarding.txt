@@ -1,0 +1,16 @@
+Proceso de onboarding para nuevos desarrolladores - Empresa Demo
+
+Día 1: Recursos Humanos entrega el equipo de trabajo (laptop, credenciales
+corporativas) y realiza la inducción general de la empresa (misión, visión,
+políticas internas).
+
+Semana 1: El líder técnico asigna un "buddy" (compañero guía) del equipo.
+Se otorgan accesos a los repositorios de código, al tablero de tareas
+(Jira/Azure DevOps) y al entorno de desarrollo local. Se agenda una sesión
+de arquitectura general de los sistemas que mantiene el equipo.
+
+Semana 2 a 4: El nuevo desarrollador resuelve tickets de baja complejidad
+("good first issues") con revisión de código cercana. Se espera que para el
+día 30 pueda trabajar de forma independiente en tareas de complejidad media,
+y que para el día 90 esté totalmente integrado al flujo de trabajo del
+equipo (sprint planning, code reviews, guardias de soporte si aplica).

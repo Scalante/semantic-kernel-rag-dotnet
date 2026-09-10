@@ -1,0 +1,18 @@
+# Normaliza los finales de línea: en el repositorio siempre LF, en el checkout
+# lo que corresponda al SO. Evita el ruido "LF will be replaced by CRLF" y los
+# diffs falsos entre Windows y Linux/Mac.
+* text=auto eol=lf
+
+# Binarios: que Git no toque los finales de línea.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.onnx binary
+
+# Scripts que deben conservar su final de línea nativo.
+*.sh   text eol=lf
+*.ps1  text eol=crlf
+*.cmd  text eol=crlf
+*.bat  text eol=crlf
