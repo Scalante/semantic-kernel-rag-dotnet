@@ -47,5 +47,7 @@ pgvector · ML.NET. El objetivo es poder **defender cada línea en una entrevist
 - **Puertos de la API**: perfil `http` → `http://localhost:5080`, perfil `https`
   → `https://localhost:7080`. Definidos en `Properties/launchSettings.json`
   (fijos y altos porque el rango 50000+ que asigna VS está reservado por Windows).
-- **Re-seed**: `/api/rag/seed` inserta con `Guid` nuevo cada vez → duplica. Hacer
-  `TRUNCATE knowledge_documents;` antes de un re-seed limpio.
+- **Re-seed**: la ingesta es idempotente (el `Id` del documento se deriva de su
+  `Source`), así que repetir `/api/rag/seed` sobrescribe y no duplica. La búsqueda
+  además colapsa duplicados por `Source`. Datos duplicados de pruebas antiguas se
+  limpian con `TRUNCATE knowledge_documents;` y un `/api/rag/seed`.
