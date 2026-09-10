@@ -1,0 +1,17 @@
+<Project>
+
+  <!--
+    Propiedades comunes a TODOS los proyectos de la solución.
+    Evita repetir TargetFramework / Nullable / ImplicitUsings en cada .csproj
+    y deja un único lugar donde subir de versión de .NET en el futuro.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+</Project>

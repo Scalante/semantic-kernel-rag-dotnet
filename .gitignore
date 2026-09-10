@@ -1,23 +1,109 @@
-### AL ###
-#Template for AL projects for Dynamics 365 Business Central
-#launch.json folder
+## ---------------------------------------------------------------------------
+## .gitignore para solución .NET (C#) — AiPortfolio
+## Basado en la plantilla oficial github/gitignore VisualStudio.gitignore,
+## recortada a lo que aplica a este repo (Web API + libs + tests + Docker).
+## ---------------------------------------------------------------------------
+
+# Resultados de compilación
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Carpetas de herramientas / IDE
+.vs/
 .vscode/
-#Cache folder
-.alcache/
-#Symbols folder
-.alpackages/
-#Snapshots folder
-.snapshots/
-#Testing Output folder
-.output/
-#Extension App-file
-*.app
-#Rapid Application Development File
-rad.json
-#Translation Base-file
-*.g.xlf
-#License-files
-*.bclicense
-*.flf
-#Test results file
-TestResults.xml
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Restore de NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+.nuget/
+
+# MSBuild / build intermedio
+project.assets.json
+*.binlog
+*.nuget.dgspec.json
+*.nuget.g.props
+*.nuget.g.targets
+
+# Resultados de pruebas y cobertura
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+coverage*.json
+coverage*.xml
+coverage*.info
+TestResults/
+.msCoverageSourceRootsMapping*
+
+# Caches varios
+*.cache
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+
+# Modelos de ML.NET entrenados y guardados en runtime.
+# (Se anclan a la carpeta del proyecto MLNet para no colisionar por nombre
+#  con la carpeta 'AiPortfolio.Infrastructure.MLNet' en sistemas case-insensitive.)
+/src/AiPortfolio.Infrastructure.MLNet/**/*.zip
+/src/AiPortfolio.Infrastructure.MLNet/**/*.onnx
+
+# Secretos y configuración local (NO commitear claves de API)
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.Local.json
+secrets.json
+*.local.env
+.env
+.env.*
+!.env.example
+
+# Publicación
+publish/
+*.[Pp]ublish.xml
+*.azurePubxml
+*.pubxml
+*.pubxml.user
+PublishScripts/
+
+# Rider
+*.sln.iml
+
+# Docker
+**/docker-compose.override.yml
+
+# SO
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>AiPortfolio.Infrastructure.Rag</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Conector oficial de Semantic Kernel para Postgres + pgvector.
+         Solo existe hasta 1.74.0-preview; toda la solución fija SK a la línea 1.74
+         para que el conjunto sea binariamente coherente (ver Infrastructure.AI). -->
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.PgVector" Version="1.74.0-preview" />
+    <!-- Abstracciones de almacenes vectoriales (atributos [VectorStoreKey]/
+         [VectorStoreData]/[VectorStoreVector], VectorStoreCollection<TKey,TRecord>).
+         10.1.0 es la versión contra la que se compiló el conector PgVector 1.74. -->
+    <PackageReference Include="Microsoft.Extensions.VectorData.Abstractions" Version="10.1.0" />
+    <!-- Generación de embeddings agnóstica al proveedor (IEmbeddingGenerator). -->
+    <PackageReference Include="Microsoft.Extensions.AI" Version="10.4.1" />
+    <!-- Proveedor de embeddings por defecto: Ollama local (OllamaApiClient implementa
+         IEmbeddingGenerator<string, Embedding<float>> de forma nativa).
+         5.4.12 = la versión que trae Microsoft.SemanticKernel.Connectors.Ollama 1.74. -->
+    <PackageReference Include="OllamaSharp" Version="5.4.12" />
+    <!-- Proveedor de embeddings alternativo: OpenAI (SDK oficial + adaptador M.E.AI). -->
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.4.1" />
+    <PackageReference Include="OpenAI" Version="2.13.0" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AiPortfolio.Application\AiPortfolio.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Data\sample-documents\*.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

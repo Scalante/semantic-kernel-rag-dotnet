@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>AiPortfolio.Api</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AiPortfolio.Application\AiPortfolio.Application.csproj" />
+    <ProjectReference Include="..\AiPortfolio.Infrastructure.AI\AiPortfolio.Infrastructure.AI.csproj" />
+    <ProjectReference Include="..\AiPortfolio.Infrastructure.Rag\AiPortfolio.Infrastructure.Rag.csproj" />
+    <ProjectReference Include="..\AiPortfolio.Infrastructure.MLNet\AiPortfolio.Infrastructure.MLNet.csproj" />
+  </ItemGroup>
+
+</Project>
