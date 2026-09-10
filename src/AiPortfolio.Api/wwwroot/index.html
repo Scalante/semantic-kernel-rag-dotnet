@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AiPortfolio — Panel de pruebas</title>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+  />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="container">
+    <hgroup>
+      <h1>AiPortfolio · Panel de pruebas</h1>
+      <p>
+        Consola gráfica para probar la API: RAG, agente con function calling y
+        clasificación con ML.NET.
+        <a href="/swagger" target="_blank" rel="noopener">Ver Swagger</a>
+      </p>
+    </hgroup>
+
+    <div id="statusBar" class="status">Comprobando estado…</div>
+    <div id="errorBanner" class="error-banner" hidden></div>
+
+    <nav class="tabs" role="tablist" aria-label="Funcionalidades">
+      <button role="tab" data-tab="kb"       aria-selected="true">1 · Conocimiento</button>
+      <button role="tab" data-tab="chat"     aria-selected="false">2 · Chat</button>
+      <button role="tab" data-tab="search"   aria-selected="false">3 · Búsqueda</button>
+      <button role="tab" data-tab="classify" aria-selected="false">4 · Clasificador</button>
+    </nav>
+
+    <!-- ============================ Base de conocimiento ==================== -->
+    <section id="panel-kb" class="panel" role="tabpanel">
+      <p class="muted">
+        Ingesta los 4 documentos de ejemplo (políticas ficticias) o agrega uno
+        propio. Cada uno se convierte en un embedding y se guarda en pgvector.
+      </p>
+
+      <div class="row">
+        <button id="seedBtn" class="secondary">Ingestar documentos de ejemplo</button>
+        <span id="seedResult" class="muted"></span>
+      </div>
+
+      <hr />
+      <p class="muted"><strong>Agregar un documento propio</strong></p>
+      <div class="examples" id="examples-doc"></div>
+      <form id="ingestForm" class="stack">
+        <input id="docTitle" type="text" placeholder="Título" required />
+        <input id="docSource" type="text" placeholder="Fuente (ej. politica-x.txt)" required />
+        <textarea id="docContent" rows="3" placeholder="Contenido del documento" required></textarea>
+        <div class="row">
+          <button type="submit" id="ingestBtn">Ingestar documento</button>
+          <span id="ingestResult" class="muted"></span>
+        </div>
+      </form>
+    </section>
+
+    <!-- ============================ Chat con el agente ===================== -->
+    <section id="panel-chat" class="panel" role="tabpanel" hidden>
+      <p class="muted">Semantic Kernel + function calling + RAG. El agente decide por su cuenta si consulta la base.</p>
+      <div class="examples" id="examples-chat"></div>
+
+      <form id="chatForm" class="stack">
+        <textarea id="chatQuestion" rows="3" required
+          placeholder="¿Cuántos días de vacaciones acumulo por mes?"></textarea>
+        <div class="row">
+          <button type="submit" id="chatBtn">Preguntar</button>
+          <button type="button" id="chatResetBtn" class="secondary outline">Nueva conversación</button>
+          <span id="convId" class="muted mono"></span>
+        </div>
+      </form>
+
+      <div id="chatAnswer" class="answer" hidden>
+        <div id="chatAnswerText"></div>
+        <div id="chatSources" class="chips"></div>
+      </div>
+    </section>
+
+    <!-- ============================ Búsqueda vectorial ==================== -->
+    <section id="panel-search" class="panel" role="tabpanel" hidden>
+      <p class="muted">
+        Búsqueda por similitud de coseno directa contra pgvector, sin pasar por el
+        LLM. La barra es el <em>score</em> (más alto = más parecido); el umbral por
+        defecto es 0.65.
+      </p>
+      <div class="examples" id="examples-search"></div>
+
+      <form id="searchForm" class="row">
+        <input id="searchQuery" type="text" required
+          placeholder="vacaciones por mes" style="flex:1" />
+        <input id="searchTopK" type="number" value="3" min="1" max="10" style="width:5rem" />
+        <button type="submit" id="searchBtn">Buscar</button>
+      </form>
+
+      <div id="searchResults" class="stack"></div>
+    </section>
+
+    <!-- ============================ Clasificador ML.NET ================== -->
+    <section id="panel-classify" class="panel" role="tabpanel" hidden>
+      <p class="muted">ML.NET (no generativo): clasifica el ticket en Bug / Pregunta / Mejora.</p>
+      <div class="examples" id="examples-classify"></div>
+
+      <form id="classifyForm" class="stack">
+        <textarea id="ticketText" rows="2" required
+          placeholder="La aplicación se cierra sola al exportar un PDF"></textarea>
+        <button type="submit" id="classifyBtn">Clasificar</button>
+      </form>
+
+      <div id="classifyResult" class="answer" hidden>
+        <div class="row">
+          <span>Categoría:</span>
+          <span id="ticketCategory" class="badge"></span>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar"><div id="ticketBar" class="bar-fill"></div></div>
+          <span id="ticketConfidence" class="mono muted"></span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="muted">
+      AiPortfolio · <a href="https://github.com/Scalante/semantic-kernel-rag-dotnet" target="_blank" rel="noopener">repositorio</a>
+    </footer>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
